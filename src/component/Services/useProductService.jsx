@@ -7,22 +7,29 @@ export function useProductService() {
   const [products, setProducts] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   const fetchProducts = async () => {
     try {
+      console.log("Starting fetchProducts...");
       setLoading(true);
       setError(null);
-      // BUG: missing await here, so response is a Promise, not the data
-      const response = axios.get(`${API_BASE_URL}/products`);
-      setProducts(response.data); // This will fail
+
+      const response = await axios.get(`${API_BASE_URL}/products`);
+      console.log("API response:", response.data);
+
+      setProducts(response.data);
     } catch (err) {
+      console.error("Fetch error:", err);
       setError(err.message || "Failed to fetch products");
     } finally {
       setLoading(false);
+      console.log("Finished fetchProducts");
     }
   };
 
   useEffect(() => {
+    console.log("Products:", products);
+    console.log("Loading:", loading);
+    console.log("Error:", error);
     fetchProducts();
   }, []);
 

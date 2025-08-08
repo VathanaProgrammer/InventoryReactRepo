@@ -10,7 +10,7 @@ function TableInventoryAtTheFirstSection() {
   const [categoryFilter, setCategoryFilter] = useState("");
 
   // Filter products based on search and category filter
- const filteredProducts = (products || []).filter((product) => {
+  const filteredProducts = (products || []).filter((product) => {
     const matchesSearch =
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.id.toString().includes(searchTerm);
@@ -72,6 +72,9 @@ function TableInventoryAtTheFirstSection() {
                   Product Name
                 </th>
                 <th scope="col" className="px-6 py-3">
+                  Qty
+                </th>
+                <th scope="col" className="px-6 py-3">
                   Category
                 </th>
                 <th scope="col" className="px-6 py-3">
@@ -104,10 +107,21 @@ function TableInventoryAtTheFirstSection() {
                       {product.id}
                     </th>
                     <td className="px-6 py-4">{product.name}</td>
-                    <td className="px-6 py-4">{product.category}</td>
-                    <td className="px-6 py-4">{product.supplier}</td>
+                    <td className="px-6 py-4">{product.qty}</td>
+                    <td className="px-6 py-4">{product.categoryName}</td>
+                    <td className="px-6 py-4">{product.supplierName}</td>
                     <td className="px-6 py-4">${product.price.toFixed(2)}</td>
-                    <td className="px-6 py-4">{product.status}</td>
+                    <td className="px-6 py-4">
+                      {product.qty <= 10 ? (
+                        <span className="text-yellow-600 font-semibold">
+                          Low Stock
+                        </span>
+                      ) : (
+                        <span className="text-green-600 font-semibold">
+                          In Stock
+                        </span>
+                      )}
+                    </td>
                     <td className="px-6 py-4">
                       <button className="font-medium text-blue-600 hover:underline">
                         Edit
@@ -117,10 +131,7 @@ function TableInventoryAtTheFirstSection() {
                 ))
               ) : (
                 <tr>
-                  <td
-                    colSpan="7"
-                    className="text-center text-gray-500 py-4"
-                  >
+                  <td colSpan="7" className="text-center text-gray-500 py-4">
                     No products found.
                   </td>
                 </tr>
