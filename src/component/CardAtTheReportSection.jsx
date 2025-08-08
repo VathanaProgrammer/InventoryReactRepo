@@ -1,36 +1,77 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { API_BASE_URL } from "../Config/Api"; // adjust path as needed
 
 function CardAtTheReportSection() {
-  // Example dynamic category distribution data
-  const categories = [
-    { name: "Electronics", percentage: 45 },
-    { name: "Clothing", percentage: 25 },
-    { name: "Books", percentage: 15 },
-    { name: "Home Appliances", percentage: 10 },
-    { name: "Others", percentage: 5 },
-  ];
+  const [categories, setCategories] = useState([]);
+  const [products, setProducts] = useState([]);
 
-  // Example dynamic product data
-  const products = [
-    { name: "Laptop", stock: 15 },
-    { name: "Shirt", stock: 0 },
-    { name: "Book - React Guide", stock: 4 },
-    { name: "Washing Machine", stock: 8 },
-    { name: "Camera", stock: 25 },
-    { name: "Microwave", stock: 2 },
-  ];
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Calculate stock status counts dynamically
-  const inStock = products.filter((p) => p.stock > 10).length;
-  const lowStock = products.filter((p) => p.stock > 0 && p.stock <= 10).length;
-  const outOfStock = products.filter((p) => p.stock === 0).length;
+  // Fetch categories and products on component mount
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
 
-  // Stock status with colored badges for counts only
+      try {
+        const [categoriesRes, productsRes] = await Promise.all([
+          axios.get(`${API_BASE_URL}/categories`),
+          axios.get(`${API_BASE_URL}/products`),
+        ]);
+
+        // Assuming the data structure:
+        // categoriesRes.data = array of categories with { id, name, ... }
+        // productsRes.data = array of products with { id, name, stock or qty, categoryId, ... }
+
+        // For categories, if you want percentages, you need to calculate it:
+        // Calculate total products count first:
+        const totalProducts = productsRes.data.length;
+
+        // Count how many products per category
+        const categoryCounts = categoriesRes.data.map((cat) => {
+          const count = productsRes.data.filter(
+            (p) => p.categoryId === cat.id
+          ).length;
+          return {
+            name: cat.name,
+            count,
+          };
+        });
+
+        // Calculate percentage per category
+        const categoriesWithPercentage = categoryCounts.map((cat) => ({
+          name: cat.name,
+          percentage: totalProducts ? ((cat.count / totalProducts) * 100).toFixed(1) : 0,
+        }));
+
+        setCategories(categoriesWithPercentage);
+        setProducts(productsRes.data);
+      } catch (err) {
+        setError("Failed to load data from server.");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Stock status calculations (based on `stock` or `qty` field in product)
+  const inStock = products.filter((p) => p.qty > 10).length;
+  const lowStock = products.filter((p) => p.qty > 0 && p.qty <= 10).length;
+  const outOfStock = products.filter((p) => p.qty === 0).length;
+
   const stockStatus = [
     { status: "In Stock", count: inStock, color: "bg-green-500" },
     { status: "Low Stock", count: lowStock, color: "bg-yellow-500" },
     { status: "Out of Stock", count: outOfStock, color: "bg-red-500" },
   ];
+
+  if (loading) return <p>Loading report data...</p>;
+  if (error) return <p className="text-red-600">{error}</p>;
 
   return (
     <div className="flex flex-col md:flex-row gap-6 justify-between items-start">
@@ -80,7 +121,7 @@ function CardAtTheReportSection() {
               >
                 {item.count}
               </span>
-            </li> 
+            </li>
           ))}
         </ul>
       </section>

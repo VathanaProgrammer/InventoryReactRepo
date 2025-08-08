@@ -25,7 +25,7 @@ function UserLogin() {
             });
             if (res.data.success) {
                 navigate("/Dashboard");
-                localStorage.setItem("user", JSON.stringify(res.data.user));
+                localStorage.setItem("user", JSON.stringify(res.data.data));
                 localStorage.setItem("token", res.data.token);
                 toast.success("Login successful!");
             }

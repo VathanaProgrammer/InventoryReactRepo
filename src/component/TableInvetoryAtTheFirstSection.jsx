@@ -1,14 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useProductService } from "./Services/useProductService";
-
+import AddNewProductModel from "./AddNewProductModel.jsx";
+import { API_BASE_URL } from "../Config/Api";
+import axios from "axios";
 function TableInventoryAtTheFirstSection() {
   // Use your custom hook to get products from API
-  const { products, loading, error } = useProductService();
+  const { products, loading, error, refetch, deleteProduct } =
+    useProductService();
 
   // Local state for search and category filter (optional)
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
-
+  const [categories, setCategories] = useState([]); // Assuming you have categories to filter
+  const [showAddProductModal, setShowAddProductModal] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
   // Filter products based on search and category filter
   const filteredProducts = (products || []).filter((product) => {
     const matchesSearch =
@@ -16,15 +21,68 @@ function TableInventoryAtTheFirstSection() {
       product.id.toString().includes(searchTerm);
 
     const matchesCategory = categoryFilter
-      ? product.category.toLowerCase() === categoryFilter.toLowerCase()
+      ? product.categoryName.toLowerCase() === categoryFilter.toLowerCase()
       : true;
 
     return matchesSearch && matchesCategory;
   });
 
+  // Open modal to add product
+  const openAddModal = () => {
+    setEditingProduct(null); // clear edit product
+    setShowAddProductModal(true);
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this product?")) {
+      deleteProduct(id);
+    }
+  };
+
+  // Open modal to edit product
+  const openEditModal = (product) => {
+    setEditingProduct(product);
+    setShowAddProductModal(true);
+  };
+
+  const handleProductAdded = () => {
+    // e.g. refresh product list here
+    setShowAddProductModal(false);
+    setEditingProduct(null);
+    refetch(); // Re-fetch products after adding a new one
+  };
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/categories`);
+        console.log("Fetched categories:", response);
+        setCategories(response.data || []);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+    fetchCategories();
+  }, []); // <--- Add empty array here
+
   return (
-    <div className="bg-white w-full p-10">
-      {/* Search & Category Select */}
+    <div className="bg-white min-h-36 w-full p-10">
+      <div className="flex justify-end items-center mb-2">
+        <button
+          onClick={openAddModal}
+          className="bg-blue-500 sm:p-2 p-1 w-[15%] text-white sm:text-sm text-xs"
+        >
+          + Add product
+        </button>
+      </div>
+      {showAddProductModal && (
+        <AddNewProductModel
+          product={editingProduct}
+          onClose={() => setShowAddProductModal(false)}
+          onSaved={handleProductAdded}
+        />
+      )}
+
       <div className="max-w-full mb-6">
         <div className="flex">
           {/* Search Input */}
@@ -46,11 +104,11 @@ function TableInventoryAtTheFirstSection() {
             onChange={(e) => setCategoryFilter(e.target.value)}
           >
             <option value="">All categories</option>
-            <option value="Electronics">Electronics</option>
-            <option value="Apparel">Apparel</option>
-            <option value="Home & Garden">Home & Garden</option>
-            <option value="Beauty">Beauty</option>
-            <option value="Sports">Sports</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.name}>
+                {category.name}
+              </option>
+            ))}
           </select>
         </div>
       </div>
@@ -61,7 +119,7 @@ function TableInventoryAtTheFirstSection() {
       ) : error ? (
         <p className="text-red-600">Error: {error}</p>
       ) : (
-        <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <div className="relative overflow-x-auto h-96 shadow-md sm:rounded-lg">
           <table className="w-full text-sm text-left text-gray-500">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50">
               <tr>
@@ -123,8 +181,17 @@ function TableInventoryAtTheFirstSection() {
                       )}
                     </td>
                     <td className="px-6 py-4">
-                      <button className="font-medium text-blue-600 hover:underline">
+                      <button
+                        onClick={() => openEditModal(product)}
+                        className="font-medium text-blue-600 hover:underline me-2"
+                      >
                         Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(product.id)}
+                        className="font-medium text-red-600 hover:underline"
+                      >
+                        Delete
                       </button>
                     </td>
                   </tr>
