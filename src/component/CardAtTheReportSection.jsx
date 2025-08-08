@@ -33,7 +33,7 @@ function CardAtTheReportSection() {
   ];
 
   return (
-    <div className="flex flex-col md:flex-row gap-6 justify-between items-start p-4">
+    <div className="flex flex-col md:flex-row gap-6 justify-between items-start">
       {/* Category Distribution */}
       <section className="p-6 border min-h-[400px] border-gray-300 shadow-md bg-white rounded-lg w-full">
         <header>

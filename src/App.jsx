@@ -1,18 +1,20 @@
 import './App.css';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import UserLogin from "./component/UserLogin.jsx";
-import Inventory from './component/Inventory.jsx';
-import TableInventoryAtTheFirstSection from './component/TableInvetoryAtTheFirstSection.jsx';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import UserLogin from './component/UserLogin.jsx';
+import Dashboard from './component/Dashboard.jsx';
+
 function App() {
   return (
-        <Router>
-            <Routes>
-                {/* <Route path="/" element={<UserLogin />} /> */}
-                <Route path="/Inventory" element={<Inventory/>}/> 
-                <Route path="/" element={<TableInventoryAtTheFirstSection />} />
-            </Routes>
-        </Router>
-    
-  )
+    <Router>
+      <Routes>
+        <Route path="/" element={<UserLogin />} />
+        <Route path="/Dashboard" element={<Dashboard />} />
+      </Routes>
+      <ToastContainer />
+    </Router>
+  );
 }
-export default App
+
+export default App;
