@@ -4,7 +4,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import UserLogin from './component/UserLogin.jsx';
 import Dashboard from './component/Dashboard.jsx';
-
+import AddStock from './component/AddStock.jsx';
 function App() {
   return (
     <Router>

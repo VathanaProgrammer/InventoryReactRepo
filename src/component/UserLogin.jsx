@@ -8,7 +8,7 @@ function UserLogin() {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
+    const [setError] = useState("");
     const handleSignIn = async () => {
          if(!email.trim()){
                 toast.error("Invalid email!");
