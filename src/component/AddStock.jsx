@@ -47,7 +47,15 @@ function AddStock({ product = null, onClose, onSaved }) {
         formData
       );
       if (response.data.success) {
-        toast.success("Stock entry recorded successfully!");
+        toast.success("Stock entry recorded successfully!", {
+            position: "bottom-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        });
         setTimeout(() => {
           onClose(); // Close modal after success
           onSaved(); // Call the onSaved callback to refresh data
