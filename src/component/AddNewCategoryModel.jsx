@@ -56,7 +56,7 @@ function AddNewCategoryModel({ category = null, onClose, onSaved }) {
       if (category) {
         // Edit mode: PUT request to update category by ID
         response = await axios.put(
-          `${API_BASE_URL}/categories/${category.id}`,
+          `${API_BASE_URL}/categories`,
           formData
         );
       } else {
