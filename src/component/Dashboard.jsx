@@ -13,9 +13,10 @@ function Dashboard() {
   const { products } = useProductService();
   const lowStockCount = (products || []).filter((p) => p.qty <= 10).length;
   const totalPriceStock = (products || []).reduce(
-    (sum, p) => sum + Number(p.price),
+    (sum, p) => sum + (p.qty > 0 ? Number(p.price) * Number(p.qty) : 0),
     0
   );
+
   const cateCount = new Set((products || []).map((p) => p.categoryId)).size;
   const productCount = (products || []).length;
   const [activeTab, setActiveTab] = useState("inventory");

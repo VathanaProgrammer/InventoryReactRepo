@@ -95,7 +95,15 @@ function POSPanel() {
       setLoading(true);
       await axios.post(`${API_BASE_URL}/sales`, salePayload);
       console.table("Sale submitted:", salePayload);
-      toast.success("Sale completed!");
+      toast.success("Sale completed!", {
+        position: "bottom-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
       setCustomerName("");
       setCart([]);
     } catch (err) {
