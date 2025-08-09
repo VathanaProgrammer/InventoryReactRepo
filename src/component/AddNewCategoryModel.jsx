@@ -69,8 +69,10 @@ function AddNewCategoryModel({ category = null, onClose, onSaved }) {
           category ? "Category updated successfully!" : "Category added successfully!"
         );
 
-        if (onSaved) onSaved(); // Notify parent to refresh data
-        if (onClose) onClose(); // Close the modal
+        setTimeout(() => {
+          onClose(); // Close modal after success
+            onSaved(); // Call the onSaved callback to refresh data
+        }, 5000);
 
         // Clear form only if adding new category
         if (!category) setFormData({ name: "" });
